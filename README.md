@@ -92,7 +92,7 @@ The circuit descriptors (`top_speed`, `mean_trap`, `track_temp`) are all measure
 
 ```
 python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
-pip install -r requirements-dev.txt                     # or requirements-lock.txt for the exact tested versions
+pip install -r requirements-dev.txt                    
 
 pytest                                                  # leakage + statistics tests
 python -m devradar.backtest data/gaps_quali_2026.csv data/circuit_descriptors.csv

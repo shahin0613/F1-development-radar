@@ -1,9 +1,11 @@
 # Development Radar
 
+![tests](https://github.com/shahin0613/F1-development-radar/actions/workflows/tests.yml/badge.svg)
+
 **Can public lap-time data tell us whether a mid-season F1 upgrade worked, and how sure can we be?**
 
 - **What it does:** turns public timing data into per-team, per-race pace gaps (race and qualifying), tests for step changes around a known upgrade, and states how large a step must be before the method can see it at all.
-- **What it found:** only upgrades of roughly 0.6-1.0% of lap time (about 0.5-0.9 s) are reliably detectable with public data. Aston Martin's B-spec step is consistent with a real improvement (race +1.90%, qualifying +1.74%), but the race-pace result is fragile.
+- **What it found:** only upgrades of roughly 0.6-1.0% of lap time (about 0.5-0.9 s) are reliably detectable with public data. Aston Martin's B-spec step is consistent with a real improvement in race pace (about +1.3% to +1.9% depending on the baseline), but it is fragile, and the qualifying gain (+0.5% to +1.7%) is largely recovery from a mid-season dip.
 - **What it can't claim:** it measures relative lap-time efficiency. It cannot separate aero from mechanical grip, power-unit deployment or energy management, and it is one season of 17 races.
 
 Everything below is reproduced by the commands in [Reproduce](#reproduce). Data: 2026 season, 17 races (`data/`).
@@ -15,10 +17,10 @@ Everything below is reproduced by the commands in [Reproduce](#reproduce). Data:
 | Question | Answer |
 |---|---|
 | **How big must an upgrade be to be reliably detected?** (80% power, 5% one-sided test) | **Qualifying 0.6-0.8%, race 0.8-1.0% of lap time**, depending on when it lands. Roughly 0.5-0.9 s on a ~90 s lap. Smaller upgrades cannot be reliably detected from public lap-time data. |
-| Did Aston Martin's B-spec step show up? (upgrade timing taken from public reporting, Hungarian GP = race 11) | **Consistent with a step in both sessions, but fragile in race pace.** Race pace **+1.90%** (90% CI +0.32 to +3.48), qualifying **+1.74%** (90% CI +0.60 to +2.87). The race CI crosses zero if Hungary or the Dutch GP is dropped. See caveats below. |
-| Where did Aston's step come from? (qualifying telemetry, corner-speed classes) | **Suggestive, not precise.** Most of the gain sits in **straight-line time** (+1.10%, CI +0.51 to +1.68, about 0.7 of the ~1.6 points of lap time) and **low-speed corner time** (+1.54%, CI +0.52 to +2.57, about 0.4 points). Low-speed *apex speed* did not change (-0.12%, CI -1.24 to +1.00), so the low-speed gain is in entry and exit, not mid-corner speed. **Caution:** the placebo test finds "significant" steps for 3 of 11 teams in both the Low and Straight classes, so these class-level intervals are too narrow. Medium/high-speed apex speed rose about +3% but rests on 2-3 races per side. See [corner analysis](#corner-speed-class-analysis-qualifying-telemetry). |
+| Did Aston Martin's B-spec step show up? (upgrade timing taken from public reporting, Hungarian GP = race 11) | **Consistent with a real step in race pace; weaker in qualifying; the size depends on the baseline.** Race pace **+1.3% to +1.9%** (w=3 window: +1.90%, 90% CI +0.32 to +3.48; against races 1-6: +1.29%). Qualifying **+0.5% to +1.7%** (w=3 window: +1.74%, CI +0.60 to +2.87; against races 1-6: +0.52%, because Aston was in a dip before the upgrade). The race CI crosses zero if Hungary or the Dutch GP is dropped. See caveats below. |
+| Where did Aston's step come from? (qualifying telemetry, corner-speed classes) | **Suggestive, not precise.** Most of the gain sits in **straight-line time** (+1.10%, CI +0.51 to +1.68, about 0.7 of the ~1.6 points of lap time) and **low-speed corner time** (+1.54%, CI +0.52 to +2.57, about 0.4 points). Low-speed *apex speed* did not change (-0.12%, CI -1.24 to +1.00), so the low-speed gain is in entry and exit, not mid-corner speed. Medium/high-speed apex speed rose about +3% but rests on 2-3 races per side. See [corner analysis](#corner-speed-class-analysis-qualifying-telemetry). |
 | Does a one-race-ahead forecast beat a 3-race rolling median? | **No.** The median beats "last race" in qualifying (MAE 0.344 vs 0.384, CI of the difference excludes 0); nothing beats the median. |
-| Would a track-characteristics factor help? | **No, even with weekend-measured descriptors.** The oracle ceiling is no better than the median (qualifying: +0.001, CI -0.005 to +0.009; race: slightly worse, +0.017, CI +0.003 to +0.033). |
+| Would a track-characteristics factor help? | **Not detectably.** Even with the target race's own weekend-measured descriptors (an oracle upper bound), it does no better than the median (qualifying: +0.001, CI -0.005 to +0.009; race: slightly worse, +0.017, CI +0.003 to +0.033). Caveat: it is fit on only 6-15 training races, so this is a low-power negative ("no detectable gain here"), not proof that track effects don't exist. |
 | Are 90% prediction intervals calibrated? | Qualifying 86.0% raw, 91.7% after causal recalibration. Race 92.4% raw, 88.2% recalibrated. With ~120 forecasts the sampling error is about +/-3 points, so treat both as "roughly calibrated". |
 
 ![Aston Martin step test](figures/aston_step.png)
@@ -26,8 +28,9 @@ Everything below is reproduced by the commands in [Reproduce](#reproduce). Data:
 ### How to read the Aston result
 
 - **Timing is pre-specified, not read off the data.** F1Technical, PlanetF1 and Crash.net all report the B-spec AMR26 (16 new parts) debuting at the Hungarian GP, which is `RaceIdx` 11 in `data/race_order_2026.csv`.
-- **It is large and specific to Aston.** The same test on the other ten teams gives nothing comparable in race pace (no CI excludes zero). In qualifying, Alpine (+0.45%) and McLaren (+0.37%) have small positive steps; Aston's is about four times larger.
-- **It is stable to the window:** +1.4% to +2.9% (race) and +1.4% to +2.1% (qualifying) for 2-5 races either side.
+- **It is large and specific to Aston.** The same test on the other ten teams gives nothing comparable in race pace (no CI excludes zero). In qualifying, Alpine (+0.45%) and McLaren (+0.37%) have small positive steps; Aston's w=3 step is about four times larger.
+- **The sign is stable to the window; the size is less so.** Race pace: +1.90% (w=3), +1.71% (w=4), +1.42% (w=5). Qualifying: +2.14% (w=2), +1.74% (w=3), +1.70% (w=4), +1.36% (w=5).
+- **The pre-window is Aston's worst stretch, so the baseline matters.** Aston's mean gap to the field (unweighted, from `data/`): race pace 2.44% (races 1-6), 3.11% (races 7-10), 1.15% (races 11-17); qualifying 1.78%, 3.06%, 1.25%. Against the headline window (races 8-10) the gain is +1.87% (race) and +1.74% (qualifying). Against races 1-10 it is +1.56% and +1.04%; against races 1-6 it is +1.29% and +0.52%. The race-pace gain holds up across baselines; much of the qualifying gain is recovery from a mid-season dip rather than improvement beyond Aston's early-season level.
 - **But it rests on three races per side.** Dropping Hungary or the Dutch GP from the race-pace post-window pushes the race CI across zero (qualifying stays above zero). Race 13 (Monza) is back near the pre-upgrade level.
 - **It is not an aero-only estimate.** A second change (Honda power-unit improvements) was reported from the Dutch GP (race 12), so the post-upgrade window mixes two changes. Hungary and Zandvoort are also low-speed circuits, and a car can be relatively better at some circuits regardless of upgrades. The step is consistent with a real improvement; it is not proof of what caused it.
 
@@ -68,7 +71,7 @@ The lap-time gap says *how much*; this says *where on the lap*. `devradar/corner
 
 - **Aston's persistent deficit is on the straights, not in the corners.** Its straight-class time was 1.2-3.7% off the field in every race with data (mean 2.8%), versus roughly field-average in low-speed corners. That pattern points at power-unit deployment, drag or energy management rather than mechanical grip, but this data cannot separate those.
 - **The straight-line improvement cannot be credited to the aero upgrade.** The second change (power unit, Dutch GP) falls inside the post-upgrade window, and the lowest straight gap of the season is race 12.
-- **Class-level evidence is much thinner than the lap-time evidence.** Each side has 3 races or fewer, many circuits have no high-speed class, and the placebo test finds "significant" steps for 3 of 11 teams in the Low class and 3 of 11 in the Straight class, more than a 90% interval should give. Read these as a pattern consistent with the lap-time result, not as precise attribution.
+- **Class-level evidence is much thinner than the lap-time evidence.** Each side has 3 races or fewer and many circuits have no high-speed class. In the placebo test, 2 of the 10 other teams show a "significant" step in the Low class (Cadillac, McLaren) and 2 of 10 in the Straight class (Alpine, Racing Bulls). With a 90% interval about 1 is expected, so this is consistent with chance (P(2 or more) is about 26%), but with 3 races per side it is weak evidence either way. Read the class results as a pattern consistent with the lap-time result, not as precise attribution.
 - **Race 17 has no Aston corner estimate:** its telemetry laps failed the distance sanity check (integrated length >1.5% off the median, i.e. dropouts) and were dropped rather than repaired.
 
 Limits specific to this module: about 7 Hz telemetry, so apex speed is coarse; speed-class thresholds are a convention (`LOW_KMH`, `HIGH_KMH`); flat-out kinks with no speed dip are not detected as corners; one lap per driver per segment; qualifying only (no race stints).
@@ -77,10 +80,11 @@ Limits specific to this module: about 7 Hz telemetry, so apex speed is coarse; s
 
 - It measures **relative lap-time efficiency**. It cannot separate aero from mechanical grip, tyre state, power-unit deployment or energy management (important under the 2026 regulations).
 - Standard errors capture within-race sampling only. Race-wide shocks (weather, safety cars, track evolution) are handled by measuring each team against the field, not by the SEs. Teammate covariance is ignored in the SEs.
+- Race-pace model assumptions: the tyre degradation slope per compound is shared by all teams (a team with unusually high degradation gets a biased pace estimate), and OLS standard errors ignore lap-to-lap autocorrelation within stints. The season-level extra-scatter term in `step_effect` partly compensates but does not remove this.
 - Fuel burn and track evolution are one combined linear lap-number term per race.
 - One season, 17 races, and the 2026 regulations are new, so there is no earlier history to train on. Everything here is in-sample for this one season except the rolling-origin backtest.
 - `RaceIdx` is chronological position among races with data, not the official round number.
-- Race 15 (Azerbaijan GP) has no race-pace estimate because it did not pass the data-quality filters; qualifying is complete for all 17 races.
+- Three team-races have no race-pace estimate because they failed the data-quality filters: McLaren at race 2 (Chinese GP), Cadillac at race 8 (Austrian GP) and Aston Martin at race 15 (Azerbaijan GP). Qualifying is complete for all 17 races.
 
 ### About the track factor
 
@@ -112,7 +116,7 @@ python -m devradar.run --year 2026 --upgrade "Aston Martin:11"
 python -m devradar.corners 2026                             # rebuild data/corner_gaps_quali_2026.csv from telemetry (~100 MB download, cached)
 ```
 
-GP trend plots (`figures/trends_*.png`) need `pip install -r requirements-gp.txt`. `--source fastf1` needs `pip install fastf1`.
+GP trend plots (`figures/trends_*.png`) need `pip install -r requirements-gp.txt`; rebuild them from `data/` with `python regen_trends.py`. `--source fastf1` needs `pip install fastf1`.
 
 ## Next
 

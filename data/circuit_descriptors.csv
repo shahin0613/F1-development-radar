@@ -1,0 +1,18 @@
+RaceIdx,Event,top_speed,mean_trap,best_lap,track_temp,rain
+1,Australian Grand Prix,313.0,284.31604565255844,82.091,36.3,False
+2,Chinese Grand Prix,335.0,279.82630268517676,95.275,21.6,False
+3,Japanese Grand Prix,335.0,286.99063964779793,92.432,32.3,False
+4,Miami Grand Prix,322.0,244.00535706327162,91.869,38.0,False
+5,Canadian Grand Prix,326.0,274.1374767765592,74.21,18.3,False
+6,Monaco Grand Prix,281.0,225.48501810169867,73.481,43.4,False
+7,Barcelona Grand Prix,348.0,283.11080796670234,80.122,50.2,False
+8,Austrian Grand Prix,319.0,273.9452265759724,70.374,51.1,False
+9,British Grand Prix,323.0,274.5812650257354,91.777,40.1,False
+10,Belgian Grand Prix,327.0,256.2445194691704,108.89,31.3,False
+11,Hungarian Grand Prix,335.0,275.4819702368796,82.0,50.4,False
+12,Dutch Grand Prix,337.0,293.23051634087636,74.23,34.2,True
+13,Italian Grand Prix,328.0,300.82928398191666,83.504,54.1,False
+14,Spanish Grand Prix,304.0,240.86491821184046,95.587,53.9,False
+15,Azerbaijan Grand Prix,340.75,260.1457880834465,104.916,44.3,False
+16,Bahrain Grand Prix,322.79999999999995,247.62285446102163,98.22,33.3,False
+17,Singapore Grand Prix,308.0,273.5443038697206,95.202,42.2,False

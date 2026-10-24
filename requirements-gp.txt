@@ -1,0 +1,6 @@
+# optional: Gaussian-process trend plots (devradar/trend.py: fit_all, plot_trends, upgrade_effect)
+-r requirements.txt
+tensorflow>=2.15
+tf-keras
+tensorflow-probability>=0.23
+gpflow>=2.9

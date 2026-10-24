@@ -1,0 +1,7 @@
+# core: everything the tests, backtest, power analysis and step test need
+pandas>=2.0
+numpy>=1.24
+scipy>=1.10
+scikit-learn>=1.3
+statsmodels>=0.14
+matplotlib>=3.7

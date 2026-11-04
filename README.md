@@ -5,7 +5,7 @@
 **Can public lap-time data tell us whether a mid-season F1 upgrade worked, and how sure can we be?**
 
 - **What it does:** turns public timing data into per-team, per-race pace gaps (race and qualifying), tests for step changes around a known upgrade, and states how large a step must be before the method can see it at all.
-- **What it found:** only upgrades of roughly 0.6-1.0% of lap time (about 0.5-0.9 s) are reliably detectable with public data. Aston Martin's B-spec step is consistent with a real improvement in race pace (about +1.3% to +1.9% depending on the baseline), but it is fragile, and the qualifying gain (+0.5% to +1.7%) is largely recovery from a mid-season dip.
+- **What it found:** only upgrades of roughly 0.6-1.0% of lap time (about 0.5-0.9 s) are reliably detectable with public data. Aston Martin's B-spec step is consistent with a real improvement in race pace (about +1.3% to +1.9% depending on the baseline), but it is fragile, and the qualifying gain (+0.5% to +1.7%, depending on the baseline) is partly recovery from a mid-season dip.
 - **What it can't claim:** it measures relative lap-time efficiency. It cannot separate aero from mechanical grip, power-unit deployment or energy management, and it is one season of 17 races.
 
 Everything below is reproduced by the commands in [Reproduce](#reproduce). Data: 2026 season, 17 races (`data/`).
